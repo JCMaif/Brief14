@@ -20,7 +20,6 @@ const users = [
   { id: 2, username: 'admin', password: 'admin', role: 'admin' }
 ];
 
-// TODO: Ajouter un middleware de redirection qui vérifie si l'utilisateur est authentifié, on le redirige vers /user dans ce cas
 app.get('/login', (req, res, next) => {
   const token = req.cookies.token;
   if (token) {
@@ -55,23 +54,19 @@ app.post('/login', (req, res) => {
   const user = users.find(u => u.username === username && u.password === password);
 
   if (user) {
-    // TODO: Créer le token JWT et le stocker dans un cookie
     const token = jwt.sign({ id: user.id, role: user.role }, secret, { expiresIn: '1h' });
     res.cookie('token', token);
 
-    // TODO: Rediriger l'utilisateur vers la route `/user`
     res.redirect('/user');
   } else {
     res.status(401).send('Invalid credentials');
   }
 });
 
-// TODO: Ajouter un middleware pour l'authentification avec JWT
 app.get('/user', authMiddleware,(req, res) => {
   res.json({ message: 'Welcome, user!' });
 });
 
-// TODO: Ajouter un middleware pour l'authentification avec JWT
 app.get('/admin', authMiddleware,(req, res) => {
   if (req.user.role === 'admin') {
     res.json({ message: 'Welcome, admin!' });
@@ -81,10 +76,3 @@ app.get('/admin', authMiddleware,(req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-/* 
-Sources pour compléter les TODO:
-- Outil d'encodage décodage de JWT : https://jwt.io/
-  - Vérification de la validité du JWT : https://www.npmjs.com/package/jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback
-  - Stockage du JWT dans un cookie : https://www.npmjs.com/package/cookie-parser
-*/
